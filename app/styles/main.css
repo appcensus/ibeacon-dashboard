@@ -1,8 +1,10 @@
 .loading-spinner {
-  display: block;
-  margin: auto;
-  margin-top: 150px;
+  position: fixed;
+  top: 30%;
+  left: 48%;
+  z-index: 1;
 }
 .main {
   display: none;
+  z-index: -1;
 }
