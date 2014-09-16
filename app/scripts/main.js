@@ -18,7 +18,9 @@ $(function() {
   // get temp data for chart
   loadData()
   .then(function (data) {
-    console.log(data);
+    console.log(_.groupBy(data, function (event) {
+      return moment(event.attributes.enterTime).format('YYYY-M-D');
+    }));
     return loadData(true);
   })
   .done(function (data) {
@@ -52,10 +54,7 @@ function loadData(temp) {
     // set random data from yesterday to end of period
     for (var i = 0; i < PERIOD; i++) {
       minutes.push(Math.floor(Math.random() * 100));
-      var date = new Date();
-      date.setDate(date.getDate() + (i - PERIOD));
-      var dateString = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
-      x.push(dateString);
+      x.push(moment().subtract('days', i + 1).format('YYYY-M-D'));
     }
     deferred.resolve();
   } else {
