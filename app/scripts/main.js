@@ -4,32 +4,36 @@ var x = ['x'],
     chart;
 
 $(function() {
-  // listener to update period and data on selection
-  $('#period').on('change', function() {
-    var selection = $(this).val();
-    if (selection !== PERIOD) {
-      PERIOD = $(this).val();
-      update();
-    }
-  });
-  // get initial data for chart with default settings
-  loadData();
-  // render chart
-  chart = c3.generate({
-    data: {
-      x: 'x',
-      type: 'bar',
-      columns: [x, minutes]
-    },
-    axis: {
-      x: {
-        type: 'timeseries',
-        tick: {
-          format: '%Y-%m-%d'
+  setTimeout(function() {
+    $('.loading-spinner').hide();
+    $('.main').show();
+    // listener to update period and data on selection
+    $('#period').on('change', function() {
+      var selection = $(this).val();
+      if (selection !== PERIOD) {
+        PERIOD = $(this).val();
+        update();
+      }
+    });
+    // get initial data for chart with default settings
+    loadData();
+    // render chart
+    chart = c3.generate({
+      data: {
+        x: 'x',
+        type: 'bar',
+        columns: [x, minutes]
+      },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%Y-%m-%d'
+          }
         }
       }
-    }
-  });
+    });
+  }, 2000);
 });
 
 function loadData() {

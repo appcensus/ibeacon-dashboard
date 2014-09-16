@@ -1,0 +1,8 @@
+.loading-spinner {
+  display: block;
+  margin: auto;
+  margin-top: 150px;
+}
+.main {
+  display: none;
+}
