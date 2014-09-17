@@ -21,8 +21,8 @@ $(function() {
   .done(function (data) {
     events = data;
     organizeData();
-    $('.loading-spinner').hide();
-    $('.main').show();
+    $('#spinner').hide();
+    $('#main').show();
     // render chart
     chart = c3.generate({
       data: {
@@ -47,7 +47,6 @@ function loadData() {
   // get events from Parse based on period selection
   var Event = Parse.Object.extend("Event");
   var query = new Parse.Query(Event);
-  console.log(new Date(moment().format()));
   query.lessThanOrEqualTo('exitTime', new Date(moment().format()))
   query.greaterThanOrEqualTo('enterTime', new Date(moment().subtract(PERIOD - 1, 'days').startOf('day').format()));
   query.find({
@@ -65,29 +64,35 @@ function loadData() {
 function organizeData() {
   // group events by date
   var eventGroups = _.groupBy(events, function (event) {
-    return moment(event.attributes.enterTime).format('YYYY-M-D');
+    return moment(event.get("enterTime")).format('YYYY-M-D');
   });
-  // add dates
-  x = x.concat(_.keys(eventGroups));
-  _.each(eventGroups, function (events) {
-    // sum difference between enter and exit times for each date
-    var time = 0;
-    _.each(events, function (event) {
-      var start = moment(event.attributes.enterTime);
-      var exit = (event.attributes.exitTime) ? event.attributes.exitTime : moment();
-      var end = moment(exit);
-      time += end.diff(start, 'minutes');
-    });
-    // add minutes for date
-    minutes.push(time);
-  });
+  for (var i = 0; i < PERIOD; i++) {
+    // add dates
+    var day = moment().subtract(i, 'days').format('YYYY-M-D');
+    x.push(day);
+    // check if day in data
+    if (eventGroups.hasOwnProperty(day)) {
+      // sum difference between enter and exit times for each date
+      var time = 0;
+      _.each(eventGroups[day], function (event) {
+        var start = moment(event.get("enterTime"));
+        var exit = (event.get("exitTime")) ? event.get("exitTime") : moment();
+        var end = moment(exit);
+        time += end.diff(start, 'minutes');
+      });
+      // add minutes for date
+      minutes.push(time);
+    } else {
+      minutes.push(0);
+    }
+  }
 }
 
 function update() {
   // reset arrays to first values
   x = x.slice(0,1);
   minutes = minutes.slice(0,1);
-  var spinner = $('#loading-spinner');
+  var spinner = $('#spinner');
   spinner.show();
   loadData()
   .done(function (data) {
